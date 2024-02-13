@@ -2,18 +2,37 @@
 import socket
 import logging
 from blocklist_backend import BlocklistBackend
-from config import backend_type, redis_config, sqlite_config
+from config import backend_type, redis_config, sqlite_config, WHITELIST_DOMAINS, INCLUDE_SUBDOMAINS
 
 backend = BlocklistBackend(backend_type, redis_config if backend_type == "redis" else sqlite_config)
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
 
+def extract_domain(email):
+    return email.split('@')[-1].lower()
+
+def is_sender_whitelisted(sender):
+    sender_domain = extract_domain(sender)
+    for domain in WHITELIST_DOMAINS:
+        if INCLUDE_SUBDOMAINS:
+            if sender_domain == domain or sender_domain.endswith('.' + domain):
+                return True
+        else:
+            if sender_domain == domain:
+                return True
+    return False
+
 def handle_request(data):
     request_data = dict(line.split('=', 1) for line in data.strip().split('\n') if line)
     logging.debug(f"Received data: {request_data}")
 
+    if is_sender_whitelisted(request_data.get('sender', '')):
+        logging.debug(f"Sender {request_data.get('sender', '')} is whitelisted.")
+        return "action=DUNNO\n\n"
+    
     if backend.is_sender_blocked(request_data.get('sender', '')):
         return "action=DISCARD\n\n"
+    
     return "action=DUNNO\n\n"
 
 def start_server(port=10667):
