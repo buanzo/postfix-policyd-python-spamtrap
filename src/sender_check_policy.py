@@ -13,7 +13,7 @@ def handle_request(data):
     logging.debug(f"Received data: {request_data}")
 
     if backend.is_sender_blocked(request_data.get('sender', '')):
-        return "action=REJECT\n\n"
+        return "action=DISCARD\n\n"
     return "action=DUNNO\n\n"
 
 def start_server(port=10667):
