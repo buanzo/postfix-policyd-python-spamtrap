@@ -13,7 +13,7 @@ This system implements a spamtrap policy daemon for Postfix, allowing for the dy
 
 1. **Clone the Repository**: Download the scripts to your server.
 2. **Install Dependencies**: Ensure Python 3 is installed along with the `redis` and `sqlite3` Python libraries.
-3. **Configure**: Edit `config.py` to set your backend type (`redis` or `sqlite`), connection details, and spamtrap addresses.
+3. **Configure**: Edit `config.py` to set your backend type (`redis` or `sqlite`), connection details, spamtrap addresses and (optionally) domain whitelisting.
 
 ## Configuration
 
