@@ -35,6 +35,9 @@ def handle_request(data):
         return "action=DUNNO\n\n"
     
     if is_spamtrap(request_data.get('recipient', '')):
+        if request_data.get('sender','') == '':
+            # Wont spamtrap <>
+            return "action=DUNNO\n\n"
         backend.add_blocked_sender(request_data.get('sender', ''))
         return "action=DISCARD\n\n"
     
