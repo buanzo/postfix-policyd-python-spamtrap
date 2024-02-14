@@ -42,6 +42,7 @@ def handle_request(data):
 
 def start_server(port=10666):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind(('127.0.0.1', port))
         s.listen()
         logging.info(f"Policy server listening on port {port}")
