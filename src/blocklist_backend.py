@@ -30,8 +30,9 @@ class BlocklistBackend:
                                                         WHERE sender NOT IN 
                                                         (SELECT sender FROM blocklist_timestamps);''').fetchall()
             # Insert a default timestamp for these senders
-            conn.executemany('''INSERT INTO blocklist_timestamps (sender, timestamp) 
-                                VALUES (?, ?);''', [(sender[0], default_timestamp) for sender in senders_without_timestamp])
+            for sender in senders_without_timestamp:
+                conn.execute('''INSERT INTO blocklist_timestamps (sender, timestamp)
+                                VALUES (?, ?);''', (sender[0], default_timestamp))
 
     def add_blocked_sender(self, sender):
         if self.backend_type == "redis":
